@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.itheima.mapper.UserMapper">
+    <resultMap id="userMapping" type="user">
+        <id property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="age" column="age"/>
+        <result property="address" column="address"/>
+        <result property="qq" column="qq"/>
+        <result property="email" column="email"/>
+        <association property="province" column="address" select="com.itheima.mapper.ProvinceMapper.findByCode">
+        </association>
+    </resultMap>
+
+    <!--查询所有信息-->
+    <select id="findAll" resultMap="userMapping">
+        select * from user
+        <where>
+            <if test="name != null and name != ''">
+                and name like #{name}
+            </if>
+            <if test="address != null and address != ''">
+                and address like #{address}
+            </if>
+            <if test="email != null and email != ''">
+                and email like #{email}
+            </if>
+        </where>
+    </select>
+
+    <!--添加信息-->
+    <insert id="save" parameterType="user">
+        insert into `ssm`.`user` (`id`,`name`,`gender`,`age`,`address`,`qq`,`email`)
+        values (#{id}, #{name},#{gender},#{age}, #{address},#{qq},#{email})
+    </insert>
+
+    <!--删除信息-->
+    <delete id="dele" parameterType="int">
+    delete from user where id = #{id}
+    </delete>
+
+    <!--修改信息-->
+    <update id="udate" parameterType="user">
+        update
+          `ssm`.`user`
+        set
+          `name` = #{name},
+          `gender` = #{gender},
+          `age` = #{age},
+          `address` = #{address},
+          `qq` = #{qq},
+          `email` = #{email}
+        where `id` = #{id} ;
+    </update>
+
+    <!--查询用户信息-->
+    <select id="findById" resultType="user" parameterType="int">
+        select * from user where id = #{id}
+    </select>
+
+    <!--批量删除-->
+    <delete id="deleteSelect" parameterType="list">
+        delete from user where
+        <foreach collection="array" open="id in (" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--查询所有用户信息-->
+    <select id="findTotal" parameterType="list" resultType="user">
+        select * from user
+    </select>
+
+    <!--login-->
+    <select id="findUser" resultType="user">
+        select * from user where username = #{username} and password = #{password}
+    </select>
+</mapper>
